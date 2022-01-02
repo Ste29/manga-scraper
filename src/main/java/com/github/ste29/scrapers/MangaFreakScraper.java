@@ -4,6 +4,7 @@ import com.github.ste29.Chapter;
 import com.github.ste29.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.zeroturnaround.zip.ZipUtil;
 
@@ -24,12 +25,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class MangaEdenScraper extends MangaScraper {
+public class MangaFreakScraper extends MangaScraper {
 
     private String mangaUrlStr;
     private Path downloadDir;
 
-    MangaEdenScraper(String mangaUrlStr, Path downloadFld){
+    MangaFreakScraper(String mangaUrlStr, Path downloadFld){
         super(downloadFld);
         this.mangaUrlStr = mangaUrlStr;
         System.out.println("Getting chapters");
@@ -46,13 +47,19 @@ public class MangaEdenScraper extends MangaScraper {
         } catch(IOException e) {
             throw new RuntimeException(e);
         }
+
+        Elements ppp = document
+                .select("div.manga_series_list > table > tbody > tr > td:first-child > a");
+        Element p1 = ppp.first();
+        String p2 = p1.absUrl("href");
+        String p3 =p1.text();
         return document
-                .select("#leftContent > table > tbody > tr > td:first-child > a").stream()
+                .select("div.manga_series_list > table > tbody > tr > td:first-child > a").stream()
                 // .filter(elem -> !elem.select("b").text().contains(".")) // Ignore weird half-chapters TODO Make option
-                .map(elem -> new Chapter(elem.absUrl("href"), elem.select("b").text(),
-                        setNumber(elem.select("b").text())))
+                .map(elem -> new Chapter(elem.absUrl("href"), elem.text(), setNumber(elem.text())))
                 .collect(Collectors.toList());
     }
+
 
     @Override
     public void crawl(Chapter chapter) {
@@ -93,31 +100,30 @@ public class MangaEdenScraper extends MangaScraper {
             throw new RuntimeException(e);
         }
         // prendi id=top-in, div class top-title, prendi il 5 elemento e guarda option(?)
-        Elements pages = document.select("#top-in > div.top-title > select:nth-child(5) > option");
+        Elements pages = document.select("div.slideshow-container > a:first-child > div > img");
+
+//        List<Element> ppp = pages.stream()
+//                .filter(option -> !existing.contains(option.text()))
+//                .collect(Collectors.toList());
+//
+//        Element p1 = ppp.get(0);
+//        String s = p1.absUrl("src");
+//        String s1 = p1.absUrl("alt");
         counter += pages.size();
         pages
                 //.parallelStream()
                 .stream()
                 .filter(option -> !existing.contains(option.text()))
                 .forEach(option ->
-                        downloadImage(option.absUrl("value"), option.text(), downloadDir)
+                        downloadImage(option.absUrl("src"), null, downloadDir)
                 );
 
         ZipUtil.pack(downloadDir.toFile(), new File(downloadDir.toString()+".zip"));
+
     }
-
     @Override
-    public void downloadImage(String url, String number, Path downloadDir) {
-        System.out.println("Downloading " + url);
-        Document document;
-        try {
-            document = Jsoup.connect(url).get();
-        } catch(IOException e) {
-            // TODO Retry?
-            throw new RuntimeException(e);
-        }
-
-        String imgSrc = document.select("#mainImg").first().absUrl("src");
+    public void downloadImage(String imgSrc, String number, Path downloadDir) {
+        System.out.println("Downloading " + imgSrc);
 
         URL imgUrl;
         try {
@@ -126,11 +132,13 @@ public class MangaEdenScraper extends MangaScraper {
             e.printStackTrace();
             return;
         }
-        String ext = Utils.last(imgSrc.split("\\."), 1);
+        String ext = Utils.last(imgSrc.split("\\."),1);
+        number = Utils.last(Utils.last(imgSrc.split("\\."), 2).split("\\_"),1);
+
         while (number.length() < 4) {
             number = "0" + number;
         }
-        String prefix = url.split("/")[url.split("/").length-2];
+        String prefix = Utils.last(imgSrc.split("/")[imgSrc.split("/").length-2].split("\\_"),1);
         while (prefix.length() < 4) {
             prefix = "0" + prefix;
         }
@@ -167,7 +175,7 @@ public class MangaEdenScraper extends MangaScraper {
         String[] n = tmpName.split(""); //array of strings
         StringBuffer f = new StringBuffer(); // buffer to store numbers
 
-        for (int i = 0; i < n.length; i++) {
+        for (int i = 8; i < n.length; i++) {  // 7 in order to not consider "chapter" in string name
             if((n[i].matches("[0-9]+"))) {// validating numbers
                 f.append(n[i]); //appending
             }else {
@@ -179,3 +187,4 @@ public class MangaEdenScraper extends MangaScraper {
     }
 
 }
+

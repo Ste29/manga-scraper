@@ -1,31 +1,31 @@
 package com.github.ste29;
 
+import com.github.ste29.scrapers.MangaScraper;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
-import com.github.ste29.OriginSite;
+import com.github.ste29.scrapers.OriginSite;
 
 
 public class Main {
     // TODO UI, funzionalità ricerca, funzionalità selezione range di capitoli da scaricare (da x a y, da x
-    //  alla fine del manga, fino ad y), scraper per altri siti tipo mangafreak (che dovrebbe avere apposite api)
+    //  alla fine del manga, fino ad y), scraper per altri siti tipo mangafreak (che dovrebbe avere apposite api),
+    //  controllare le cartelle di download se sono già piene non riscaricare i file
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
     public static void main (String[] args) {
         // Define Parse args
         Options argsOptions = new Options();
 
-        Option urlMangaConfig = new Option("u", "url", true, "manga url");
+        Option urlMangaConfig = new Option("u", "url", true, "required field, manga url");
         urlMangaConfig.setRequired(true);
         argsOptions.addOption(urlMangaConfig);
         Option originConfig = new Option("o", "origin", true,
-                "manga site used for download, available: \n* mangaeden");
+                "required field, manga site used for download, available: \n* mangaeden");
         originConfig.setRequired(true);
         argsOptions.addOption(originConfig);
         Option downloadConfig = new Option("d", "download", true, "download directory");
@@ -93,7 +93,6 @@ public class Main {
         // Filter chapters
         scraper.rangeChapter(r1, r2);
         scraper.startDownload();
-
-        System.out.println("ciao");
+        
     }
 }

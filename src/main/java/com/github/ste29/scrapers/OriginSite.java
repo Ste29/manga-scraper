@@ -1,6 +1,5 @@
-package com.github.ste29;
+package com.github.ste29.scrapers;
 
-import com.github.ste29.scrapers.MangaEdenScraper;
 import java.nio.file.Path;
 
 // Todo fare in modo che ogni enum instanzi la sua relativa classe
@@ -16,7 +15,7 @@ public enum OriginSite {
         @Override
         public MangaScraper createScraper(String mangaUrlStr, Path downloadFld)  {
             System.out.println("To be implemented");
-            return new MangaEdenScraper(mangaUrlStr, downloadFld);
+            return new MangaFreakScraper(mangaUrlStr, downloadFld);
         }
     };
 

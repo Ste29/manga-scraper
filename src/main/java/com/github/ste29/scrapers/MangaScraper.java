@@ -1,4 +1,6 @@
-package com.github.ste29;
+package com.github.ste29.scrapers;
+
+import com.github.ste29.Chapter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,6 +33,8 @@ public abstract class MangaScraper {
         ListIterator<Chapter> it = chapters.listIterator(chapters.size());
         while(it.hasPrevious()) {
             crawl(it.previous());
+            // todo mettere un check su counter e downloaddir così che venga eseguito lo zip solo quando la cartella è
+            //  piena e non dopo ogni chapter
         }
 
         System.out.println("Chapters downloaded! Enjoy the reading! :)");
@@ -41,4 +45,6 @@ public abstract class MangaScraper {
     public abstract void crawl(Chapter chapter);
 
     public abstract void downloadImage(String url, String number, Path downloadDir);
+
+    public abstract int setNumber(String name);
 }

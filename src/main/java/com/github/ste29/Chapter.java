@@ -6,31 +6,14 @@ public class Chapter {
     public final String name;
     public final int number;
 
-    public Chapter(String url, String name) {
+    public Chapter(String url, String name, int number) {
         this.url = url;
         this.name = name;
-        this.number = getNumber();
+        this.number = number;
     }
 
     public String getChapUrl(){
         return name.replace(": ", " ").replace(":", " ").replace(" ", "_");
-    }
-
-    public int getNumber() {
-
-        String tmpName = name + " ";
-        String[] n = tmpName.split(""); //array of strings
-        StringBuffer f = new StringBuffer(); // buffer to store numbers
-
-        for (int i = 0; i < n.length; i++) {
-            if((n[i].matches("[0-9]+"))) {// validating numbers
-                f.append(n[i]); //appending
-            }else {
-                //parsing to int and returning value
-                return Integer.parseInt(f.toString());
-            }
-        }
-        return 0;
     }
 
 }
