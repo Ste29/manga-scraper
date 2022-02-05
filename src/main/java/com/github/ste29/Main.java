@@ -25,7 +25,7 @@ public class Main {
         urlMangaConfig.setRequired(true);
         argsOptions.addOption(urlMangaConfig);
         Option originConfig = new Option("o", "origin", true,
-                "required field, manga site used for download, available: \n* mangaeden");
+                "required field, manga site used for download, available: \n\t* mangaeden\n\t*mangafreak");
         originConfig.setRequired(true);
         argsOptions.addOption(originConfig);
         Option downloadConfig = new Option("d", "download", true, "download directory");
@@ -49,7 +49,7 @@ public class Main {
             argsParsed = argsParser.parse(argsOptions, args);
         } catch (ParseException e) {
             LOG.error("Error parsing input parameters", e);
-            helper.printHelp("Usage:", argsOptions);
+            helper.printHelp("", argsOptions);
             System.exit(1);
         }
 

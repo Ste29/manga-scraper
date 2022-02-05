@@ -26,9 +26,6 @@ import java.util.stream.Stream;
 
 public class MangaEdenScraper extends MangaScraper {
 
-    private String mangaUrlStr;
-    private Path downloadDir;
-
     MangaEdenScraper(String mangaUrlStr, Path downloadFld){
         super(downloadFld);
         this.mangaUrlStr = mangaUrlStr;
@@ -102,8 +99,10 @@ public class MangaEdenScraper extends MangaScraper {
                 .forEach(option ->
                         downloadImage(option.absUrl("value"), option.text(), downloadDir)
                 );
-
-        ZipUtil.pack(downloadDir.toFile(), new File(downloadDir.toString()+".zip"));
+        chaptersFolder.add(chapter.number);
+        if (counter >= MIN_PAGES) {
+            zipper();
+        }
     }
 
     @Override

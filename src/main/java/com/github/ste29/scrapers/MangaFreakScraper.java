@@ -27,9 +27,6 @@ import java.util.stream.Stream;
 
 public class MangaFreakScraper extends MangaScraper {
 
-    private String mangaUrlStr;
-    private Path downloadDir;
-
     MangaFreakScraper(String mangaUrlStr, Path downloadFld){
         super(downloadFld);
         this.mangaUrlStr = mangaUrlStr;
@@ -117,8 +114,10 @@ public class MangaFreakScraper extends MangaScraper {
                 .forEach(option ->
                         downloadImage(option.absUrl("src"), null, downloadDir)
                 );
-
-        ZipUtil.pack(downloadDir.toFile(), new File(downloadDir.toString()+".zip"));
+        chaptersFolder.add(chapter.number);
+        if (counter >= MIN_PAGES) {
+            zipper();
+        }
 
     }
     @Override

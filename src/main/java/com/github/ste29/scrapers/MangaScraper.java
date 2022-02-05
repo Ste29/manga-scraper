@@ -1,9 +1,12 @@
 package com.github.ste29.scrapers;
 
 import com.github.ste29.Chapter;
+import org.zeroturnaround.zip.ZipUtil;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
@@ -15,6 +18,9 @@ public abstract class MangaScraper {
     public List<Chapter> chapters;
     public Path downloadFld;
     public int counter;
+    public String mangaUrlStr;
+    public List<Integer> chaptersFolder = new ArrayList<Integer>();
+    public Path downloadDir;
 
     public MangaScraper(Path downloadFld) {
         this.downloadFld = downloadFld;
@@ -33,11 +39,24 @@ public abstract class MangaScraper {
         ListIterator<Chapter> it = chapters.listIterator(chapters.size());
         while(it.hasPrevious()) {
             crawl(it.previous());
-            // todo mettere un check su counter e downloaddir così che venga eseguito lo zip solo quando la cartella è
-            //  piena e non dopo ogni chapter
         }
 
         System.out.println("Chapters downloaded! Enjoy the reading! :)");
+    }
+
+    public void zipper(){
+        String title = mangaUrlStr.split("/")[mangaUrlStr.split("/").length-1];
+        String numbers;
+        if (chaptersFolder.get(0) < chaptersFolder.get(chaptersFolder.size()-1)) {
+            numbers = chaptersFolder.get(0).toString() + " - " +
+                    chaptersFolder.get(chaptersFolder.size() - 1).toString();
+        } else {
+            numbers = chaptersFolder.get(chaptersFolder.size() - 1).toString() + " - " +
+                    chaptersFolder.get(0).toString();
+        }
+        File newDir = new File(downloadDir.getParent() + "\\" +title+" - "+numbers);
+        downloadDir.toFile().renameTo(newDir);
+        ZipUtil.pack(newDir, new File(newDir.toString() + ".zip"));
     }
 
     public abstract List<Chapter> getChapters(String url);
