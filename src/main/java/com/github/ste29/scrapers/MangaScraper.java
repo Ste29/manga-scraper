@@ -57,6 +57,7 @@ public abstract class MangaScraper {
         File newDir = new File(downloadDir.getParent() + "\\" +title+" - "+numbers);
         downloadDir.toFile().renameTo(newDir);
         ZipUtil.pack(newDir, new File(newDir.toString() + ".zip"));
+        chaptersFolder.clear();
     }
 
     public abstract List<Chapter> getChapters(String url);
